@@ -6,22 +6,22 @@
 导出符号:
 
 - store.NewPool()
-  - 签名: `func NewPool(host, username, password string) *Pool`
+  - 结构定义: `func NewPool(host, username, password string) *Pool`
   - 参数`host`: 主机信息，可选，例如:`127.0.0.1:6379`
   - 说明: 生成`Pool`对象，用于后续的各项数据操作
 
 - store.Pool{}
   - 说明: Store对象池，通过NewPool创建。对于不使用的Store对象会在一定时间内释放
-  - 签名:
-	<code><pre>
-	type **Pool** struct {
-	  **ClusterOp**
-	  **OpString**
-	  **OpHash**
-	  **OpList**
-	}
-    </pre></code>
-  
+  - 结构定义:
+  ```go
+  type Pool struct {
+    ClusterOp
+    OpString
+    OpHash
+    OpList
+  }
+  ```
+
   - 成员`redis.ClusterOp`:
      - 说明: 用于操作所有的redis通用命令和返回结果的对象，OpString/OpHash/OpList都是基于此对象执行命令
   - 成员`store.OpString`:
@@ -46,56 +46,57 @@
 ----------
 - store.OpString{}
   - 说明: 操作List的接口，存储列表。见 [Redis Lists数据类型](http://www.redis.cn/commands.html#string)
-  - 签名:
-	<code><pre>
-	type **OpList** struct {
-	  **GetRaw**(key interface{}) ([]byte, error) 
-	  **Get**(key interface{}) (string, error) 
-	  **Set**(key, data interface{}) error 
-	  **Increase**(key interface{}) (int64, error) 
-	  **IncreaseBy**(key interface{}, increment int64) (int64, error) 
-	  **GetRange**(key interface{}, start, end int64) (string, error) 
-	  **Append**(key interface{}, str string) (int64, error) 
-	  **Length**(key interface{}) (int64, error) 
-	  **Remove**(key interface{}) error 
+  - 结构定义:
+	```go
+	type OpList struct {
+	  GetRaw(key interface{}) ([]byte, error) 
+	  Get(key interface{}) (string, error) 
+	  Set(key, data interface{}) error 
+	  Increase(key interface{}) (int64, error) 
+	  IncreaseBy(key interface{}, increment int64) (int64, error) 
+	  GetRange(key interface{}, start, end int64) (string, error) 
+	  Append(key interface{}, str string) (int64, error) 
+	  Length(key interface{}) (int64, error) 
+	  Remove(key interface{}) error 
 	}
-	</pre></code>
-	- 成员方法`GetRaw()`:
+	```
+
+  - 成员方法`GetRaw()`:
      - 参数`key`: 用于查询的key
      - 返回值`[]byte`: 获取该key的原始数据
      - 返回值`error`: 如果发生错误，此值为错误的信息，否则为nil
   	 - 说明: 获取指定key的值。见 [Redis GET命令](http://www.redis.cn/commands/get.html)
-	- 成员方法`Get()`:
+  
+  - 成员方法`Get()`:
      - 参数`key`: 用于查询的key
      - 返回值`string`: 获取该key的值
      - 返回值`error`: 如果发生错误，此值为错误的信息，否则为nil
   	 - 说明: 获取指定key的值。见 [Redis GET命令](http://www.redis.cn/commands/get.html)
-	- 成员方法`Set()`:
+  - 成员方法`Set()`:
      - 参数`key`: 用于查询的key
      - 参数`data`: 要设置的value值
      - 返回值`string`: 获取该key的值
      - 返回值`error`: 如果发生错误，此值为错误的信息，否则为nil
   	 - 说明: 获取指定位置的元素。见 [Redis SET命令](http://www.redis.cn/commands/set.html)
-	- 成员方法`Increase()`:
+  - 成员方法`Increase()`:
      - 参数`key`: 用于查询的key
      - 返回值`int64`: 执行递增操作后key对应的值
      - 返回值`error`: 如果发生错误，此值为错误的信息，否则为nil
   	 - 说明: 对存储在指定key的数值执行原子的加1操作 见 [Redis INCR命令](http://www.redis.cn/commands/incr.html)
-	- 成员方法`IncreaseBy()`:
+  - 成员方法`IncreaseBy()`:
      - 参数`key`: 用于查询的key
      - 参数`increment`: 执行值增加操作的大小
      - 返回值`int64`: 执行增加操作后key对应的值
      - 返回值`error`: 如果发生错误，此值为错误的信息，否则为nil
   	 - 说明: 将key对应的数字加increment 见 [Redis INCR命令](http://www.redis.cn/commands/incrby.html)	
-	- 成员方法`GetRange()`:
+  - 成员方法`GetRange()`:
      - 参数`key`: 用于查询的key
      - 参数`start`: 取子串的起始位置
      - 参数`end`: 取子串的结束位置
      - 返回值`string`: 返回key对应的字符串value的子串
      - 返回值`error`: 如果发生错误，此值为错误的信息，否则为nil
-  	 - 说明: 返回key对应的字符串value的子串，这个子串是由start和end位移决定的（两者都在string内）<br> 
-	        见 [Redis GETRANGE命令](http://www.redis.cn/commands/getrange.html)	
-	- 成员方法`Append()`:
+  	 - 说明: 返回key对应的字符串value的子串，这个子串是由start和end位移决定的（两者都在string内）<br> 见 [Redis GETRANGE命令](http://www.redis.cn/commands/getrange.html)	
+  - 成员方法`Append()`:
      - 参数`key`: 用于查询的key
      - 参数`str`: 要追加到的原有value值后的字符串
      - 返回值`int64`: 返回append后字符串值（value）的长度
@@ -116,21 +117,21 @@
 
 - store.OpHash{}
   - 说明: 操作Hash的接口，存储键值对。见 [Redis Hashs数据类型](http://www.redis.cn/commands.html#hash)
-  - 签名:
-	<code><pre>
-    type **KV** [2]interface{}
-	type **OpHash** struct {
-	  **Get**(key, name interface{}) ([]byte,error)
-	  **GetRange**(key interface{}, names... interface{}) ([]KV,error)
-	  **GetAll**(key interface{}) ([]KV,error)
-	  **Set**(name, value interface{}) error
-      **SetRange**(key interface{}, datus... KV) error
-	  **Exist**(key, name interface{}) (bool,error)
-      **Keys**(key interface{}) ([][]byte,error)
-	  **Remove**(key interface{}, names... interface{}) (bool,error)
-	  **RemoveAll**(key interface{}) error
-	}
-	</pre></code>
+  - 结构定义:
+	```go
+    type KV [2]interface{}
+    type OpHash struct {
+      Get(key, name interface{}) ([]byte,error)
+      GetRange(key interface{}, names... interface{}) ([]KV,error)
+      GetAll(key interface{}) ([]KV,error)
+      Set(name, value interface{}) error
+      SetRange(key interface{}, datus... KV) error
+      Exist(key, name interface{}) (bool,error)
+      Keys(key interface{}) ([][]byte,error)
+      Remove(key interface{}, names... interface{}) (bool,error)
+      RemoveAll(key interface{}) error
+    }
+	```
   - 成员方法`Get()`:
      - 参数`key`: 用于查询的key
      - 参数`name`: 键名
@@ -185,21 +186,21 @@
 	
 - store.OpList{}
   - 说明: 操作List的接口，存储列表。见 [Redis Lists数据类型](http://www.redis.cn/commands.html#list)
-  - 签名:
-	<code><pre>
-	type **OpList** struct {
-	  **Get**(key interface{},pos int64) ([]byte,error)
-	  **GetRange**(key interface{},pos int64, count int64) ([][]byte,error)
-	  **PopHead**(key interface{}) ([]byte,error)
-	  **PopTail**(key interface{}) ([]byte,error)
-      **Count**(key interface{}) (int64,error)
-      **Add**(key interface{}, datus... interface{}) error
-	  **Insert**(key interface{}, pos int64, datus... interface{}) error
-      **Replace**(key interface{}, pos int64, datus... interface{}) error
-	  **Remove**(key interface{}, poses... int64) error
-	  **RemoveAll**(key interface{}) error
-	}
-	</pre></code>
+  - 结构定义:
+	```go
+    type OpList struct {
+      Get(key interface{},pos int64) ([]byte,error)
+      GetRange(key interface{},pos int64, count int64) ([][]byte,error)
+      PopHead(key interface{}) ([]byte,error)
+      PopTail(key interface{}) ([]byte,error)
+      Count(key interface{}) (int64,error)
+      Add(key interface{}, datus... interface{}) error
+      Insert(key interface{}, pos int64, datus... interface{}) error
+      Replace(key interface{}, pos int64, datus... interface{}) error
+      Remove(key interface{}, poses... int64) error
+      RemoveAll(key interface{}) error
+    }
+	```
   - 成员方法`Get()`:
      - 参数`key`: 用于查询的key
      - 参数`pos`: 从0开始的元素的位置索引，负数表示从最后一个位置算起。例如：0表示第一个元素，1表示第二个元素，-1表示最后一个元素，-2表示倒数第二个元素
@@ -252,7 +253,7 @@
   	 - 说明: 从指定位置开始替换内容，替换内容的数组长度不应该超过List的容量，否则只会替换前面存在的位置的元素。见 [Redis LSET命令](http://www.redis.cn/commands/lset.html)
   - 成员方法`Remove()`:
      - 参数`key`: 用于查询的key
-     - 参数`poses`: 从0开始的元素插入的**位置索引集合**，负数表示从尾位置算起。为可变参数，可以为任意多了。例如：0表示第一个元素，1表示第二个元素，-1表示最后一个元素，-2表示倒数第二个元素
+     - 参数`poses`: 从0开始的元素插入的位置索引集合，负数表示从尾位置算起。为可变参数，可以为任意多了。例如：0表示第一个元素，1表示第二个元素，-1表示最后一个元素，-2表示倒数第二个元素
      - 返回值`error`: 如果发生错误，此值为错误的信息，否则为nil
   	 - 说明: 删除指定位置的元素。redis不支持直接指定索引删除元素，内部的做法是将指定位置的元素用`LSET`命令设置为"\_\_deleted\_\_"值，再使用`LREM`删除这些元素。见 [Redis LSET命令](http://www.redis.cn/commands/lset.html)， [Redis LREM命令](http://www.redis.cn/commands/lrem.html)
   - 成员方法`RemoveAll()`:
@@ -272,6 +273,6 @@
 
 ##类图
 <div align=center>
-写入缓存性能测试柱状图
+redis client api structure
 <img src="images/store.png" />
 </div>

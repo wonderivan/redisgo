@@ -14,7 +14,7 @@ type Pool struct {
 	ClusterOp *redis.Cluster
 	OpString  *OpString
 	OpHash    *OpHash
-	OpList    *OpList //IM消息
+	OpList    *OpList
 }
 
 // 获取配置的连接参数
