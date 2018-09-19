@@ -1,9 +1,7 @@
-# Redis存储系统说明文档
+# Redis存储访问说明文档
 ## API使用说明
 包名为`store`,引用路径`rotoava/sdk.redis`,依赖`github.com/chasex/redis-go-cluster`。
 很多命令可以从这里找到参考 [Redis 命令](http://www.redis.cn/commands.html)。
-
-导出符号:
 
 - store.NewPool()
   - 结构定义: `func NewPool(host, username, password string) *Pool`
@@ -48,7 +46,7 @@
   - 说明: 操作List的接口，存储列表。见 [Redis Lists数据类型](http://www.redis.cn/commands.html#string)
   - 结构定义:
 	```go
-	type OpList struct {
+	type OpString struct {
 	  GetRaw(key interface{}) ([]byte, error) 
 	  Get(key interface{}) (string, error) 
 	  Set(key, data interface{}) error 
